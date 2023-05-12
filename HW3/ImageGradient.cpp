@@ -13,7 +13,7 @@ ImageGradient::ImageGradient( sc_module_name n ): sc_module( n )
 
 #ifndef NATIVE_SYSTEMC
 	i_grey.clk_rst(i_clk, i_rst);
-  o_result.clk_rst(i_clk, i_rst);
+  	o_result.clk_rst(i_clk, i_rst);
 #endif
 }
 
@@ -27,7 +27,7 @@ void ImageGradient::do_filter() {
 		i_grey.reset();
 		o_result.reset();
 #endif
-wait();
+		wait();
 	}
 	x=0;
 	y=0;
@@ -40,63 +40,63 @@ wait();
 				y = y + 1;
 				x=0;
 				median_count=0;
-        wait();
+        			wait();
 			}else{
-			if(x == 0){
-				for(unsigned int i = 0; i < 9; i++){
-					#ifndef NATIVE_SYSTEMC
-					median[i] = i_grey.get();
-					#else
-					median[i] = i_grey.read();
-					#endif
-          wait();
-				}
-			} else {
-				if(median_count == 0){
-					for(unsigned int i = 0; i < 3; i++){
+				if(x == 0){
+					for(unsigned int i = 0; i < 9; i++){
 						#ifndef NATIVE_SYSTEMC
 						median[i] = i_grey.get();
 						#else
 						median[i] = i_grey.read();
 						#endif
-					}	
-					median_count = 1;                     
-          wait();
-				} else if (median_count == 1){
-					for(unsigned int i = 3; i < 6; i++){
-						#ifndef NATIVE_SYSTEMC
-						median[i] = i_grey.get();
-						#else
-						median[i] = i_grey.read();
-						#endif
-					}	
-					median_count = 2;
-          wait();					
-				} else if(median_count == 2){
-					for(unsigned int i = 6; i < 9; i++){
-						#ifndef NATIVE_SYSTEMC
-						median[i] = i_grey.get();
-						#else
-						median[i] = i_grey.read();
-						#endif
-					}	
-					median_count = 0;	
-          wait();
-				}
-			}          
-      for(sc_uint<4> i = 8; i > 0; i--){
-        for(sc_uint<4> j = 0; j < i-1; j++){
-          if(median[j] > median[j+1]){
-            sc_uint<8> tmp = median[j];
-            median[j] = median[j+1];
-            median[j+1] = tmp;
-          }
-        }
-      }  
-			median_bitmap[y][x] = median[4];
-			x++;
-      wait();
-      }
+						wait();
+					}
+				} else {
+					if(median_count == 0){
+						for(unsigned int i = 0; i < 3; i++){
+							#ifndef NATIVE_SYSTEMC
+							median[i] = i_grey.get();
+							#else
+							median[i] = i_grey.read();
+							#endif
+						}	
+						median_count = 1;                     
+						wait();
+					} else if (median_count == 1){
+						for(unsigned int i = 3; i < 6; i++){
+							#ifndef NATIVE_SYSTEMC
+							median[i] = i_grey.get();
+							#else
+							median[i] = i_grey.read();
+							#endif
+						}	
+						median_count = 2;
+						wait();					
+					} else if(median_count == 2){
+						for(unsigned int i = 6; i < 9; i++){
+							#ifndef NATIVE_SYSTEMC
+							median[i] = i_grey.get();
+							#else
+							median[i] = i_grey.read();
+							#endif
+						}	
+						median_count = 0;	
+						wait();
+					}
+				}          
+				for(sc_uint<4> i = 8; i > 0; i--){
+					for(sc_uint<4> j = 0; j < i-1; j++){
+						if(median[j] > median[j+1]){
+						sc_uint<8> tmp = median[j];
+						median[j] = median[j+1];
+						median[j+1] = tmp;
+						}
+					}
+				}  
+				median_bitmap[y][x] = median[4];
+				x++;
+				wait();
+      			}
 		}
    //mean filter
 		if(y>20) {
@@ -104,7 +104,7 @@ wait();
 			if(x_m==512){
 				y_m++;
 				x_m=0;
-        wait();
+        			wait();
 			}
 			for (sc_uint<4> v = 0; v < 3; v++) {
 				for (sc_uint<4> u = 0; u < 3; u++) {
@@ -112,7 +112,7 @@ wait();
 					int xx = x_m + u - 1;
 					if (yy >= 0 && yy < 512 && xx >= 0 && xx < 512) {
 						sum += median_bitmap[yy][xx] * mask[v][u];
-                   wait();
+                   				wait();
 					}   
 				}
 			}
@@ -123,7 +123,7 @@ wait();
 			o_result.write(mean);
 			#endif
 			x_m++;
-      wait();
+      			wait();
 		}
 	}
 }
